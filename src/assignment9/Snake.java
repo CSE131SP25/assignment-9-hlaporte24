@@ -9,13 +9,14 @@ public class Snake {
 	private LinkedList<BodySegment> segments;
 	private double deltaX;
 	private double deltaY;
-	
+
 	public Snake() {
-		//FIXME - set up the segments instance variable
-		deltaX = 0;
+		segments = new LinkedList<>();
+		deltaX = MOVEMENT_SIZE;
 		deltaY = 0;
+		segments.add(new BodySegment(0.5, 0.5, SEGMENT_SIZE));
 	}
-	
+
 	public void changeDirection(int direction) {
 		if(direction == 1) { //up
 			deltaY = MOVEMENT_SIZE;
@@ -31,38 +32,43 @@ public class Snake {
 			deltaX = MOVEMENT_SIZE;
 		}
 	}
-	
-	/**
-	 * Moves the snake by updating the position of each of the segments
-	 * based on the current direction of travel
-	 */
+
 	public void move() {
-		//FIXME
+		// get current head
+		BodySegment head = segments.getFirst(); //find current head position
+		double newX = head.getX() + deltaX; //calculate new head position
+		double newY = head.getY() + deltaY;
+
+		//add new head
+		segments.addFirst(new BodySegment(newX, newY, SEGMENT_SIZE));
+
+		// remove tail
+		segments.removeLast();
 	}
-	
-	/**
-	 * Draws the snake by drawing each segment
-	 */
+
 	public void draw() {
-		//FIXME
+		for (BodySegment seg : segments) {
+			seg.draw();
+		}
 	}
-	
-	/**
-	 * The snake attempts to eat the given food, growing if it does so successfully
-	 * @param f the food to be eaten
-	 * @return true if the snake successfully ate the food
-	 */
+
 	public boolean eatFood(Food f) {
-		//FIXME
+		BodySegment head = segments.getFirst();
+		if (f.contains(head.getX(), head.getY())) {//does head + food overlap
+			//add head without removing tail
+			double newX = head.getX() + deltaX; // new segment is added / deltax+deltay are used to determine which direction
+			double newY = head.getY() + deltaY; // tail not removed!! -- skips .removedLast()
+			segments.addFirst(new BodySegment(newX, newY, SEGMENT_SIZE));
+			return true;
+		}
 		return false;
 	}
-	
-	/**
-	 * Returns true if the head of the snake is in bounds
-	 * @return whether or not the head is in the bounds of the window
-	 */
+
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+		BodySegment head = segments.getFirst();
+		double x = head.getX();
+		double y = head.getY();
+		return x >= 0 && x <= 1 && y >= 0 && y <= 1;
 	}
 }
+
